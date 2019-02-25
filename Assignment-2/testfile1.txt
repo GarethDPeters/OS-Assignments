@@ -1,0 +1,13 @@
+help
+set t1 1
+set t2 2
+print t1
+print t2
+set t1
+set t2 changet2
+set t3 changet3
+print t1
+print t2
+print t3
+quit
+

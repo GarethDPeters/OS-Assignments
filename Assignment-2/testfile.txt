@@ -1,0 +1,8 @@
+help
+set t1 1
+set t2 2
+print t1
+print t2
+exec testfile1.txt testfile2.txt testfile3.txt
+quit
+
