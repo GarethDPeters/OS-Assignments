@@ -148,6 +148,7 @@ static ERROR_CODE exec(char *words[])
             }
         }
 
+        printf("Here\n");
         error = scheduler();
     }
     else

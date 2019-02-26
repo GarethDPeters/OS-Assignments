@@ -112,6 +112,8 @@ PCB *CPU_Dequeue(void)
         if (queue.head->next->next == NULL)
         {
             free(queue.head->next);
+            free(queue.head);
+            free(queue.tail);
             queue.head = NULL;
             queue.tail = NULL;
         }
