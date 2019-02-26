@@ -1,4 +1,3 @@
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +6,6 @@
 #include "kernel.h"
 #include "ram.h"
 
-static int addToRAM(FILE *p);
-static PCB *makePCB(FILE *p, int id);
 static void addToReady(PCB *p);
 
 int main(void)
@@ -56,42 +53,6 @@ int main(void)
     return 1;
 }
 
-/*int main(void)
-{
-    PCB *pcb1 = malloc(sizeof(PCB));
-    PCB *pcb2 = malloc(sizeof(PCB));
-    PCB *pcb3 = malloc(sizeof(PCB));
-    PCB *pcb4 = malloc(sizeof(PCB));
-
-    pcb1->PC = (FILE *)0x10051b2e0;
-    pcb2->PC = (FILE *)0x10051b2e1;
-
-    CPU_Enqueue(pcb1);
-    printf("PCB1 enqueued\n");
-    CPU_Enqueue(pcb2);
-    printf("PCB2 enqueued\n");
-
-    pcb3 = CPU_Dequeue();
-    printf("PCB1 dequeued into PCB3\n");
-    pcb4 = CPU_Dequeue();
-    printf("PCB2 dequeued into PCB4\n");
-
-    CPU_Enqueue(pcb1);
-    printf("PCB1 enqueued\n");
-    CPU_Enqueue(pcb2);
-    printf("PCB2 enqueued\n");
-
-    pcb3 = CPU_Dequeue();
-    printf("PCB1 dequeued into PCB3\n");
-    pcb4 = CPU_Dequeue();
-    printf("PCB2 dequeued into PCB4\n");
-
-    printf("FILE: %p\n", pcb1->PC);
-    printf("FILE: %p\n", pcb2->PC);
-    printf("FILE: %p\n", pcb3->PC);
-    printf("FILE: %p\n", pcb4->PC);
-}*/
-
 void myinit(FILE *p)
 {
     int id = addToRAM(p);
@@ -112,16 +73,6 @@ ERROR_CODE scheduler(void)
     }
 
     return error;
-}
-
-static int addToRAM(FILE *p)
-{
-    return ram_Add_PCB(p);
-}
-
-static PCB *makePCB(FILE *p, int id)
-{
-    return PCB_Create_PCB(p, id);
 }
 
 static void addToReady(PCB *p)

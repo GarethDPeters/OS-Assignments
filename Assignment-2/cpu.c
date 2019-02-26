@@ -70,36 +70,36 @@ bool run(ERROR_CODE *error)
         cpu.IP = current->PC;
     }
 
-    if (line_count < cpu.quanta)
+    if (PCB_Read_Line(cpu.IP, cpu.IR))
     {
-        if (PCB_Read_Line(cpu.IP, cpu.IR))
+        printf("$ %s", cpu.IR);
+        fflush(stdout);
+        *error = parse(cpu.IR);
+        errorCheck(*error);
+        if (*error == ERROR_CODE_EXIT)
         {
-            *error = parse(cpu.IR);
-            errorCheck(*error);
-            if (*error == ERROR_CODE_EXIT)
-            {
-                CPU_Init(QUANTA_LENGTH);
-                done = true;
-            }
-            else
-            {
-                line_count++;
-                *error = ERROR_CODE_NONE;
-            }
+            CPU_Init(QUANTA_LENGTH);
+            done = true;
         }
         else
         {
-            line_count = 0;
-            PCB_Close_PCB(current);
-            done = true;
+            line_count++;
+            *error = ERROR_CODE_NONE;
+            if (line_count == cpu.quanta)
+            {
+                current->PC = cpu.IP;
+                CPU_Enqueue(current);
+                free(current);
+                line_count = 0;
+                done = true;
+            }
         }
     }
     else
     {
-        current->PC = cpu.IP;
-        CPU_Enqueue(current);
-        free(current);
         line_count = 0;
+        PCB_Close_PCB(current);
+        done = true;
     }
     return done;
 }

@@ -12,7 +12,7 @@ void ram_Init(void)
     }
 }
 
-int ram_Add_PCB(FILE *file)
+int addToRAM(FILE *file)
 {
     int id;
 
@@ -35,6 +35,6 @@ int ram_Add_PCB(FILE *file)
 
 void ram_Remove_PCB(int id)
 {
-    fclose(ram[id]);
+    //fclose(ram[id]);
     ram[id] = NULL;
 }

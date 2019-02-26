@@ -81,6 +81,8 @@ static ERROR_CODE runFile(char *words[])
 
             while (fgets(input, INPUT_LENGTH, file))
             {
+                printf("$ %s", input);
+                fflush(stdout);
                 error = parse(input);
                 errorCheck(error);
                 if (error == ERROR_CODE_EXIT)
