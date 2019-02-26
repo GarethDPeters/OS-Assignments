@@ -114,39 +114,46 @@ static ERROR_CODE exec(char *words[])
             myinit(file);
         else
             errorCheck(ERROR_CODE_FILE_DNE);
-    }
-    if (words[2] != NULL)
-    {
-        if (strcmp(words[1], words[2]) != 0)
+
+        if (words[2] != NULL)
         {
-            FILE *file = fopen(words[2], "r");
-            if (file)
-                myinit(file);
+            if (strcmp(words[1], words[2]) != 0)
+            {
+                FILE *file = fopen(words[2], "r");
+                if (file)
+                    myinit(file);
+                else
+                    errorCheck(ERROR_CODE_FILE_DNE);
+            }
             else
-                errorCheck(ERROR_CODE_FILE_DNE);
+            {
+                printf("Error: Script %s already loaded. \n", words[2]);
+            }
         }
-        else
+        if (words[3] != NULL)
         {
-            printf("Error: Script %s already loaded. \n", words[2]);
-        }
-    }
-    if (words[3] != NULL)
-    {
-        if ((strcmp(words[1], words[3]) != 0) && (strcmp(words[2], words[3]) != 0))
-        {
-            FILE *file = fopen(words[3], "r");
-            if (file)
-                myinit(file);
+            if ((strcmp(words[1], words[3]) != 0) && (strcmp(words[2], words[3]) != 0))
+            {
+                FILE *file = fopen(words[3], "r");
+                if (file)
+                    myinit(file);
+                else
+                    errorCheck(ERROR_CODE_FILE_DNE);
+            }
             else
-                errorCheck(ERROR_CODE_FILE_DNE);
+            {
+                printf("Error: Script %s already loaded. \n", words[3]);
+            }
         }
-        else
-        {
-            printf("Error: Script %s already loaded. \n", words[3]);
-        }
+
+        error = scheduler();
+    }
+    else
+    {
+        error = ERROR_CODE_CMD_UNKNOWN;
     }
 
-    return scheduler();
+    return error;
 }
 
 // Chooses which command to run and returns an error if command does not exist.
