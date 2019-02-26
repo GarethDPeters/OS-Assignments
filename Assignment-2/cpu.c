@@ -89,7 +89,6 @@ bool run(ERROR_CODE *error)
             {
                 current->PC = cpu.IP;
                 CPU_Enqueue(current);
-                free(current);
                 line_count = 0;
                 done = true;
             }

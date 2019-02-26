@@ -1,5 +1,4 @@
-help
 print t1
 print t2
+set t2 4
 print t3
-print t2

@@ -14,27 +14,18 @@ void ram_Init(void)
 
 int addToRAM(FILE *file)
 {
-    int id;
-
-    for (id = 0; id < RAM_SIZE; id++)
+    for (int id = 0; id < RAM_SIZE; id++)
     {
         if (ram[id] == NULL)
         {
             ram[id] = file;
-            break;
+            return id;
         }
     }
-
-    return id;
 }
-
-/*char *ram_Read_Line(int id, char *input)
-{
-    return fgets(input, INPUT_LENGTH - 1, ram[id]);
-}*/
 
 void ram_Remove_PCB(int id)
 {
-    //fclose(ram[id]);
+    fclose(ram[id]);
     ram[id] = NULL;
 }
