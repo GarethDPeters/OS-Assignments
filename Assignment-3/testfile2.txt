@@ -1,0 +1,11 @@
+print t1
+set t4 4
+set t5 5
+print t1
+print t2
+print t3
+print t4
+print t5
+print t6
+quit
+
