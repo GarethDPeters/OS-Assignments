@@ -4,9 +4,13 @@
 
 #include <stdio.h>
 
+#define RAM_SIZE 10
+
+extern FILE *ram[RAM_SIZE];
+
 void ram_Init(void);
-int addToRAM(FILE *file);
-char *ram_Read_Line(int id, char *input);
-void ram_Remove_PCB(int id);
+void addToRAM(int id, FILE *file);
+int checkRAM(void);
+void ram_Remove_PCB(int *pageTable);
 
 #endif

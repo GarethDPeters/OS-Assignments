@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "shell.h"
-#include "interpreter.h"
-#include "ram.h"
 #include "cpu.h"
+#include "interpreter.h"
 
 struct CPU
 {
     FILE *IP;
     char IR[INPUT_LENGTH];
-    int quanta;
+    int quanta, offset;
 };
 
 typedef struct PCB_Node
@@ -32,6 +30,7 @@ static struct Ready_Queue queue;
 void CPU_Init(int quanta)
 {
     cpu.quanta = quanta;
+    cpu.offset = 0;
     queue.head = NULL;
     queue.tail = NULL;
     queue.length = 0;
@@ -62,36 +61,43 @@ void CPU_SetIP(FILE *pc)
     cpu.IP = pc;
 }
 
+void CPU_SetOffset(int offset)
+{
+    cpu.offset = offset;
+}
+
 FILE_STATE run(ERROR_CODE *error)
 {
-    static int line_count = 0;
     FILE_STATE done = CPU_READING;
 
-    if (PCB_Read_Line(cpu.IP, cpu.IR))
+    if (fgets(cpu.IR, INPUT_LENGTH - 1, cpu.IP))
     {
         printf("$ %s", cpu.IR);
         fflush(stdout);
         *error = parse(cpu.IR);
         errorCheck(*error);
+        cpu.offset++;
         if (*error == ERROR_CODE_EXIT)
         {
             CPU_Init(QUANTA_LENGTH);
-            done = CPU_ENQUEUE;
+            done = CPU_READING;
         }
         else
         {
-            line_count++;
             *error = ERROR_CODE_NONE;
-            if (line_count == cpu.quanta)
+            if (cpu.offset == PAGE_SIZE)
             {
-                line_count = 0;
+                done = CPU_PAGEFAULT;
+            }
+            else if (cpu.offset % cpu.quanta == 0)
+            {
                 done = CPU_ENQUEUE;
             }
         }
     }
     else
     {
-        line_count = 0;
+        cpu.offset = 0;
         done = CPU_EOF;
     }
     return done;
@@ -100,6 +106,11 @@ FILE_STATE run(ERROR_CODE *error)
 FILE *CPU_getIP(void)
 {
     return cpu.IP;
+}
+
+int CPU_getOffset(void)
+{
+    return cpu.offset;
 }
 
 PCB *CPU_Dequeue(void)
@@ -130,4 +141,27 @@ PCB *CPU_Dequeue(void)
 bool CPU_IsEmpty(void)
 {
     return queue.length == 0;
+}
+
+PCB *CPU_findVictim(int *pageNumber, int victimNumber)
+{
+    Node *iterator = NULL;
+    if (queue.head != NULL && queue.tail != NULL)
+    {
+        iterator = queue.head->next;
+        while (iterator != NULL)
+        {
+            for (int i = 0; i < RAM_SIZE; i++)
+            {
+                if (iterator->node->pageTable[i] == victimNumber)
+                {
+                    *pageNumber = i;
+                    return iterator->node;
+                }
+            }
+            iterator = iterator->next;
+        }
+    }
+    *pageNumber = -1;
+    return NULL;
 }

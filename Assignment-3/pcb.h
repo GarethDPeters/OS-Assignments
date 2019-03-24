@@ -4,16 +4,18 @@
 
 #include <stdio.h>
 
-#define MAX_THREAD_COUNT 3
+#include "ram.h"
+
+#define PAGE_SIZE 4
 
 typedef struct PCB
 {
-    int id;
     FILE *PC;
+    int pageTable[RAM_SIZE];
+    int PC_page, PC_offset, pages_max;
 } PCB;
 
-PCB *makePCB(FILE *file, int id);
-char *PCB_Read_Line(FILE *file, char *input);
+PCB *makePCB(FILE *file, int page_count);
 void PCB_Close_PCB(PCB *pcb);
 
 #endif

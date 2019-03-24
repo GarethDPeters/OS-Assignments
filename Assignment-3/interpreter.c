@@ -6,6 +6,7 @@
 #include "shellmemory.h"
 #include "kernel.h"
 #include "ram.h"
+#include "memorymanager.h"
 
 static ERROR_CODE help(void);
 static ERROR_CODE quit(void);
@@ -108,46 +109,35 @@ static ERROR_CODE runFile(char *words[])
 static ERROR_CODE exec(char *words[])
 {
     ERROR_CODE error = ERROR_CODE_NONE;
+    int launch = 0;
 
     if (words[1] != NULL)
     {
         FILE *file = fopen(words[1], "r");
+
         if (file)
-            myinit(file);
+            launch |= launcher(file);
         else
             errorCheck(ERROR_CODE_FILE_DNE);
 
         if (words[2] != NULL)
         {
-            if (strcmp(words[1], words[2]) != 0)
-            {
-                FILE *file = fopen(words[2], "r");
-                if (file)
-                    myinit(file);
-                else
-                    errorCheck(ERROR_CODE_FILE_DNE);
-            }
+            FILE *file = fopen(words[2], "r");
+            if (file)
+                launch |= launcher(file);
             else
-            {
-                printf("Error: Script %s already loaded. \n", words[2]);
-            }
+                errorCheck(ERROR_CODE_FILE_DNE);
         }
         if (words[3] != NULL)
         {
-            if ((strcmp(words[1], words[3]) != 0) && (strcmp(words[2], words[3]) != 0))
-            {
-                FILE *file = fopen(words[3], "r");
-                if (file)
-                    myinit(file);
-                else
-                    errorCheck(ERROR_CODE_FILE_DNE);
-            }
+            FILE *file = fopen(words[3], "r");
+            if (file)
+                launch |= launcher(file);
             else
-            {
-                printf("Error: Script %s already loaded. \n", words[3]);
-            }
+                errorCheck(ERROR_CODE_FILE_DNE);
         }
-        error = scheduler();
+        if (launch)
+            error = scheduler();
     }
     else
     {

@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#include "cpu.h"
+#include "shell.h"
 
-void myinit(FILE *p);
+int myinit(FILE *p);
 ERROR_CODE scheduler(void);
 
 #endif

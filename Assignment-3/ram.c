@@ -1,8 +1,6 @@
 #include "ram.h"
 
-#define RAM_SIZE 10
-
-static FILE *ram[RAM_SIZE];
+FILE *ram[RAM_SIZE];
 
 void ram_Init(void)
 {
@@ -12,20 +10,31 @@ void ram_Init(void)
     }
 }
 
-int addToRAM(FILE *file)
+int checkRAM(void)
 {
     for (int id = 0; id < RAM_SIZE; id++)
     {
         if (ram[id] == NULL)
         {
-            ram[id] = file;
             return id;
         }
     }
+    return -1;
 }
 
-void ram_Remove_PCB(int id)
+void addToRAM(int id, FILE *file)
 {
-    fclose(ram[id]);
-    ram[id] = NULL;
+    ram[id] = file;
+}
+
+void ram_Remove_PCB(int *pageTable)
+{
+    for (int i = 0; i < RAM_SIZE; i++)
+    {
+        int frame = pageTable[i];
+        if (frame != -1)
+        {
+            ram[frame] = NULL;
+        }
+    }
 }

@@ -3,4 +3,14 @@ set t2 2
 print t2
 print t1
 set t1
+help
+print t1
+print t2
+print t3
+print t4
+print t5
+print t6
+set t6 6
+print t6
+set t7 7
 set t2 changet2
