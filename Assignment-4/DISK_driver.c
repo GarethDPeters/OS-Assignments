@@ -69,6 +69,7 @@ int partition(char *name, int blocksize, int totalblocks)
     strcat(filename, name);
 
     FILE *file = fopen(filename, "a");
+    free(filename);
     if (file && totalblocks <= FILE_SIZE)
     {
         char word[256];
@@ -118,6 +119,8 @@ int mount(char *name)
     strcat(filename, name);
 
     FILE *file = fopen(filename, "r");
+    free(filename);
+
     if (file)
     {
         char reader[256];

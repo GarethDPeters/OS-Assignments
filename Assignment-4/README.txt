@@ -2,7 +2,7 @@ Gareth Peters
 260678626
 README.txt
 
-OS used: linux.cs.mcgill.ca
+OS used: mimi.cs.mcgill.ca
 
 1. PARTITION gets deleted when the program first runs, and is created when mount is first called.
 2. testfile.txt contains exec calls to three other testfiles: testfile1.txt, testfile2.txt, testfile3.txt
