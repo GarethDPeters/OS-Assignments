@@ -1,0 +1,16 @@
+print t1
+print t2
+set t2 4
+set t4 18
+set t10 zero
+set t20 dummy
+print t1
+print t20
+help
+print
+set print print
+set pcb victimTest
+set joseph vybihal
+print joseph
+print pcb
+print t3

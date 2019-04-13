@@ -1,0 +1,17 @@
+print t1
+print t2
+print t3
+set t4 4
+set t5 5
+print t1
+print t2
+print t5
+print t6
+Write file2.txt I'm working on an OS assignment because it's worth 7.5% of my final grade :)
+Write file1.txt Change previous to me.
+print var
+Read file2.txt var
+print var
+Read file1.txt var
+asd
+set dummy me

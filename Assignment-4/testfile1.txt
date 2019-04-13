@@ -1,0 +1,16 @@
+set t1 1
+set t2 2
+print t2
+print t1
+set t1
+help
+print t1
+mount p1 10 32
+Write file1.txt blahasasdasdasd jhjhgjhg asdasdasafdfsfdf\n dfasdfasdnvkdfnvkdvkdj
+Read file1.txt var
+print var
+Read file2 var
+set t6 6
+print t6
+set t7 7
+set t2 changet2
