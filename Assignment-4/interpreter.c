@@ -33,9 +33,9 @@ static ERROR_CODE help(void)
     printf("print VAR....................Display contents of VAR\n");
     printf("run SCRIPT.TXT...............Interpret SCRIPT.TXT\n");
     printf("exec a1.out a2.out...........Executes up to three programs in parallel\n");
-    printf("mount part #blks blk_sz......Mounts a partition to be accessed\n");
-    printf("write file [words]...........Writes words into the corresponding file\n");
-    printf("read file var................Reads from the specified file\n");
+    printf("Mount part #blks blk_sz......Mounts a partition to be accessed\n");
+    printf("Write file [words]...........Writes words into the corresponding file\n");
+    printf("Read file var................Reads from the specified file\n");
 
     return error;
 }
@@ -285,7 +285,7 @@ int interpreter(char *words[])
         error = set(words);
     else if (strcmp(words[0], "exec") == 0 && words[4] == NULL)
         error = exec(words);
-    else if (strcmp(words[0], "mount") == 0 && words[4] == NULL)
+    else if (strcmp(words[0], "Mount") == 0 && words[4] == NULL)
         error = mount_int(words);
     else if (strcmp(words[0], "Write") == 0)
         error = write(words);
