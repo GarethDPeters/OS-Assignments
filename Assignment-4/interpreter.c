@@ -176,6 +176,8 @@ static ERROR_CODE mount_int(char *words[])
         }
         else
         {
+            initPartition();
+            initFAT();
             if (partition(words[1], atoi(words[3]), atoi(words[2])))
             {
                 if (!mount(words[1]))

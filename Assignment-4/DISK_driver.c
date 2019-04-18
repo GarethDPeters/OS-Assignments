@@ -26,17 +26,23 @@ struct FAT
 char *block_buffer;
 FILE *fp[OPEN_FILE_SIZE];
 
-static void initPartition(void);
-static void initFAT(void);
 static void initBufferFP(void);
 static void initDirectory(void);
 
-static void initPartition(void)
+void initIO(void)
+{
+    initPartition();
+    initFAT();
+    initBufferFP();
+    initDirectory();
+}
+
+void initPartition(void)
 {
     partit.block_size = 0;
     partit.total_blocks = 0;
 }
-static void initFAT(void)
+void initFAT(void)
 {
     for (int i = 0; i < FAT_SIZE; i++)
     {
@@ -72,14 +78,6 @@ static void initDirectory(void)
     closedir(dir);
 }
 
-void initIO(void)
-{
-    initPartition();
-    initFAT();
-    initBufferFP();
-    initDirectory();
-}
-
 int partition(char *name, int blocksize, int totalblocks)
 {
     int error = 1;
@@ -112,8 +110,6 @@ int partition(char *name, int blocksize, int totalblocks)
             strcat(command, partit.name);
             system(command);
             free(command);
-            initPartition();
-            initFAT();
         }
         closedir(part);
         sprintf(word, "%d\n", blocksize);
@@ -262,6 +258,7 @@ int readBlock(int file)
         fseek(fp[fpEntry], fat[file].blockPtrs[fat[file].current_location], SEEK_SET);
 
         int bytes_read = fread(block_buffer, partit.block_size, 1, fp[fpEntry]);
+        partition(partit.name, partit.block_size, partit.total_blocks);
         if (bytes_read == 1)
         {
             fat[file].current_location++;
@@ -292,6 +289,7 @@ int writeBlock(int file, char **data)
         int data_length = strlen(*data);
         if (data_length < partit.block_size)
         {
+            fat[file].file_length += data_length;
             fwrite(*data, strlen(*data), 1, fp[fpEntry]);
             return 0;
         }
@@ -329,6 +327,7 @@ int closeFile(int id)
 {
     int fpEntry = fat[id].fppointer;
     fat[id].current_location = -1;
+    partition(partit.name, partit.block_size, partit.total_blocks);
     fclose(fp[fpEntry]);
     fp[fpEntry] = NULL;
 }

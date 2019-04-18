@@ -4,6 +4,8 @@
 #include <stdio.h>
 
 void initIO(void);
+void initPartition(void);
+void initFAT(void);
 int partition(char *name, int blocksize, int totalblocks);
 int mount(char *name);
 int openfile(char *name);
