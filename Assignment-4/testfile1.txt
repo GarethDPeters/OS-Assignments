@@ -7,6 +7,7 @@ help
 print t1
 Mount p1 10 32
 Write file1.txt blahasasdasdasd jhjhgjhg asdasdasafdfsfdf\n dfasdfasdnvkdfnvkdvkdj
+set x 1
 Read file1.txt var
 print var
 Read file2 var

@@ -67,6 +67,7 @@ char *IOscheduler(char *data, PCB *ptr, int cmd, int file)
         if (pop.cmd == 0)
         {
             int state = readBlock(pop.file);
+
             if (state == 1)
             {
                 strcat(output, returnBlock());

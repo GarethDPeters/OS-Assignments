@@ -9,6 +9,7 @@
 
 struct PARTITION
 {
+    char name[256];
     int total_blocks;
     int block_size;
 } partit;
@@ -25,12 +26,22 @@ struct FAT
 char *block_buffer;
 FILE *fp[OPEN_FILE_SIZE];
 
-void initIO(void)
+static void initPartition(void);
+static void initFAT(void);
+static void initBufferFP(void);
+static void initDirectory(void);
+
+static void initPartition(void)
 {
     partit.block_size = 0;
     partit.total_blocks = 0;
+}
+static void initFAT(void)
+{
     for (int i = 0; i < FAT_SIZE; i++)
     {
+        if (fat[i].filename)
+            free(fat[i].filename);
         fat[i].filename = NULL;
         fat[i].file_length = 0;
         fat[i].current_location = -1;
@@ -40,18 +51,33 @@ void initIO(void)
         }
         fat[i].fppointer = -1;
     }
+}
+static void initBufferFP(void)
+{
+    if (block_buffer)
+        free(block_buffer);
     block_buffer = NULL;
     for (int i = 0; i < OPEN_FILE_SIZE; i++)
     {
         fp[i] = NULL;
     }
-
+}
+static void initDirectory(void)
+{
     DIR *dir = opendir("PARTITION");
     if (dir)
     {
         system("exec rm -r PARTITION");
     }
     closedir(dir);
+}
+
+void initIO(void)
+{
+    initPartition();
+    initFAT();
+    initBufferFP();
+    initDirectory();
 }
 
 int partition(char *name, int blocksize, int totalblocks)
@@ -64,21 +90,35 @@ int partition(char *name, int blocksize, int totalblocks)
     }
     closedir(dir);
 
+    if (strcmp(partit.name, name) != 0)
+    {
+        strcpy(partit.name, name);
+    }
+
     char *filename = malloc(strlen("PARTITION/") + strlen(name) + 1);
     strcpy(filename, "PARTITION/");
     strcat(filename, name);
 
-    FILE *file = fopen(filename, "a");
+    FILE *file = fopen(filename, "w+");
     free(filename);
     if (file && totalblocks <= FILE_SIZE)
     {
         char word[256];
-
-        partit.block_size = blocksize;
-        partit.total_blocks = totalblocks;
-        sprintf(word, "%d\n", partit.block_size);
+        DIR *part = opendir(partit.name);
+        if (!part)
+        {
+            char *command = malloc(strlen("mkdir ") + strlen(partit.name) + 1);
+            strcpy(command, "mkdir ");
+            strcat(command, partit.name);
+            system(command);
+            free(command);
+            initPartition();
+            initFAT();
+        }
+        closedir(part);
+        sprintf(word, "%d\n", blocksize);
         fputs(word, file);
-        sprintf(word, "%d\n", partit.total_blocks);
+        sprintf(word, "%d\n", totalblocks);
         fputs(word, file);
 
         for (int i = 0; i < FAT_SIZE; i++)
@@ -117,7 +157,6 @@ int mount(char *name)
     char *filename = malloc(strlen("PARTITION/") + strlen(name) + 1);
     strcpy(filename, "PARTITION/");
     strcat(filename, name);
-
     FILE *file = fopen(filename, "r");
     free(filename);
 
@@ -176,9 +215,14 @@ int openfile(char *name)
                 {
                     if (fp[j] == NULL)
                     {
-                        fp[j] = fopen(fat[i].filename, "r+");
+                        char *filename = malloc(strlen(partit.name) + strlen("/") + strlen(name) + 1);
+                        strcpy(filename, partit.name);
+                        strcat(filename, "/");
+                        strcat(filename, name);
+                        fp[j] = fopen(filename, "r+");
                         fat[i].fppointer = j;
                         fat[i].current_location = 0;
+                        free(filename);
                         return i;
                     }
                 }
@@ -194,9 +238,14 @@ int loadFile(char *name)
     {
         if (fat[i].filename == NULL)
         {
-            fclose(fopen(name, "a"));
+            char *filename = malloc(strlen(partit.name) + strlen("/") + strlen(name) + 1);
+            strcpy(filename, partit.name);
+            strcat(filename, "/");
+            strcat(filename, name);
+            fclose(fopen(filename, "w+"));
             fat[i].filename = malloc(strlen(name) + 1);
             strcpy(fat[i].filename, name);
+            free(filename);
 
             return i;
         }
@@ -257,6 +306,7 @@ int writeBlock(int file, char **data)
                 fat[file].current_location++;
             }
             *data = (char *)*data + partit.block_size;
+            partition(partit.name, partit.block_size, partit.total_blocks);
         }
     }
     else
@@ -268,7 +318,11 @@ int writeBlock(int file, char **data)
 
 int isOpen(int id)
 {
-    return fat[id].current_location != -1;
+    if (id != -1 && id < FAT_SIZE)
+    {
+        return fat[id].current_location != -1;
+    }
+    return 0;
 }
 
 int closeFile(int id)

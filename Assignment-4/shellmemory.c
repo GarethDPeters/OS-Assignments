@@ -53,8 +53,6 @@ int addItem(char *varName, char *varValue)
         if (!varUpdate(varName, varValue))
         {
             Block *node = malloc(sizeof(Block));
-            printf("%s\n", varName);
-            //printf("%s\n", varValue);
             node->name = strdup(varName);
             node->value = strdup(varValue);
             node->next = head;

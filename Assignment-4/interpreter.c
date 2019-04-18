@@ -165,6 +165,7 @@ static ERROR_CODE mount_int(char *words[])
         strcpy(filename, "PARTITION/");
         strcat(filename, words[1]);
         FILE *part = fopen(filename, "r");
+        free(filename);
         if (part)
         {
             fclose(part);
@@ -220,6 +221,7 @@ static ERROR_CODE write(char *words[])
         if (!IOscheduler(input, NULL, 1, file_no))
             error = ERROR_CODE_WRITE_FAIL;
 
+        free(input);
         closeFile(file_no);
     }
     else
@@ -244,6 +246,7 @@ static ERROR_CODE read(char *words[])
             {
                 char *var[3] = {"", words[2], output};
                 error = set(var);
+                free(output);
             }
             else
             {
